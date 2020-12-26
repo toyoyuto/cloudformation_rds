@@ -230,7 +230,7 @@ Resources:
   DBInstance: 
     Type: "AWS::RDS::DBInstance"
     Properties: 
-      DBInstanceIdentifier: !Sub "${PJPrefix}-db"
+      DBInstanceIdentifier: !Sub "${PJPrefix}-db-instance"
       Engine: MySQL
       # version
       # EngineVersion: !Sub "${MySQLMajorVersion}.${MySQLMinorVersion}"
@@ -306,66 +306,61 @@ Resources:
 # # # ------------------------------------------------------------#
 # # # Output Parameters
 # # # ------------------------------------------------------------#                
-# # Outputs:
-# # VPC
-#   VPC:
-#     Value: !Ref VPC
-#     Export:
-#       Name: !Sub "${PJPrefix}-vpc"
+Outputs:
+# VPC
+  VPC:
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${PJPrefix}-vpc"
 
-#   VPCCIDR:
-#     Value: !Ref VPCCIDR
-#     Export:
-#       Name: !Sub "${PJPrefix}-vpc-cidr"
+  VPCCIDR:
+    Value: !Ref VPCCIDR
+    Export:
+      Name: !Sub "${PJPrefix}-vpc-cidr"
 
-# # Subnet
-#   PublicSubnet:
-#     Value: !Ref PublicSubnet
-#     Export:
-#       Name: !Sub "${PJPrefix}-public-subnet"
+# Subnet
+  PublicSubnet:
+    Value: !Ref PublicSubnet
+    Export:
+      Name: !Sub "${PJPrefix}-public-subnet"
 
-#   PublicSubnetCIDR:
-#     Value: !Ref PublicSubnetCIDR
-#     Export:
-#       Name: !Sub "${PJPrefix}-public-subnet-cidr"
+  PublicSubnetCIDR:
+    Value: !Ref PublicSubnetCIDR
+    Export:
+      Name: !Sub "${PJPrefix}-public-subnet-cidr"
 
-#   PrivateSubnet1:
-#     Value: !Ref PrivateSubnet1
-#     Export:
-#       Name: !Sub "${PJPrefix}-private1-subnet"
+  PrivateSubnet1:
+    Value: !Ref PrivateSubnet1
+    Export:
+      Name: !Sub "${PJPrefix}-private1-subnet"
     
-#   PrivateSubnet1CIDR:
-#     Value: !Ref PrivateSubnet1CIDR
-#     Export:
-#       Name: !Sub "${PJPrefix}-private-subnet1-cidr"
+  PrivateSubnet1CIDR:
+    Value: !Ref PrivateSubnet1CIDR
+    Export:
+      Name: !Sub "${PJPrefix}-private-subnet1-cidr"
 
-#   PrivateSubnet2:
-#     Value: !Ref PrivateSubnet1
-#     Export:
-#       Name: !Sub "${PJPrefix}-private2-subnet"
+  PrivateSubnet2:
+    Value: !Ref PrivateSubnet1
+    Export:
+      Name: !Sub "${PJPrefix}-private2-subnet"
     
-#   PrivateSubnet2CIDR:
-#     Value: !Ref PrivateSubnet2CIDR
-#     Export:
-#       Name: !Sub "${PJPrefix}-private-subnet2-cidr"
+  PrivateSubnet2CIDR:
+    Value: !Ref PrivateSubnet2CIDR
+    Export:
+      Name: !Sub "${PJPrefix}-private-subnet2-cidr"
 
-# # Route
-#   PublicRouteTable:
-#     Value: !Ref PublicRouteTable
-#     Export:
-#       Name: !Sub "${PJPrefix}-public-route"
-
-#   PrivateRouteTable:
-#     Value: !Ref PrivateRouteTable
-#     Export:
-#       Name: !Sub "${PJPrefix}-private-route"
+# Route
+  PublicRouteTable:
+    Value: !Ref PublicRouteTable
+    Export:
+      Name: !Sub "${PJPrefix}-public-route"
 
 # # EC2
-#   WebServer:
-#     Value: !Ref WebServer
-#     Export:
-#       Name: !Sub "${PJPrefix}-web-server"
-#   DbServer:
-#     Value: !Ref DbServer
-#     Export:
-#       Name: !Sub "${PJPrefix}-db-server"
+  WebServer:
+    Value: !Ref WebServer
+    Export:
+      Name: !Sub "${PJPrefix}-web-server"
+  DBInstance:
+    Value: !Ref DBInstance
+    Export:
+      Name: !Sub "${PJPrefix}-db-instance"
