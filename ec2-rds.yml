@@ -22,6 +22,7 @@ Metadata:
           - PublicSubnetCIDR
           - PrivateSubnet1CIDR
           - PrivateSubnet2CIDR
+          - MySQLMajorVersion
           - KeyName
     # パラメーターのラベル
     ParameterLabels: 
@@ -33,6 +34,8 @@ Metadata:
         default: "PrivateSubnet1 CIDR"
       PrivateSubnet2CIDR: 
         default: "PrivateSubnet2 CIDR"
+      MySQLMajorVersion: 
+        default: "MySQL MajorVersion"
 
 
 # ------------------------------------------------------------#
@@ -57,6 +60,10 @@ Parameters:
   PrivateSubnet2CIDR:
     Type: String
     Default: "10.0.2.0/24"
+
+  MySQLMajorVersion:
+    Type: String
+    Default: "8.0.21"
   
   KeyName:
     Type: "AWS::EC2::KeyPair::KeyName"
@@ -187,7 +194,7 @@ Resources:
       SubnetId: !Ref PublicSubnet
       # 属するセキュリティグループ
       SecurityGroupIds:
-        - !Ref WebServerSG
+        - !Ref WebServerSecurityGroup
       # インスタンスの作成時に実行するコマンドなどを記述
       UserData: !Base64 |
         #!/bin/bash
@@ -204,7 +211,7 @@ Resources:
             Value: !Sub "${PJPrefix}-web-server"
 
   # WebServerセキュリティグループ
-  WebServerSG:
+  WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: web-sg-cf
@@ -233,7 +240,7 @@ Resources:
       DBInstanceIdentifier: !Sub "${PJPrefix}-db-instance"
       Engine: MySQL
       # version
-      # EngineVersion: !Sub "${MySQLMajorVersion}.${MySQLMinorVersion}"
+      EngineVersion: !Ref MySQLMajorVersion
       # DB インスタンスのコンピューティング性能とメモリ容量 (例: db.m4.large)
       DBInstanceClass: "db.t2.micro"
       # データベースインスタンスに最初に割り当てるストレージの容量
@@ -249,17 +256,18 @@ Resources:
       # データベースインスタンスが複数のアベイラビリティーゾーンに配置されているかどうか
       MultiAZ: false
       # 自動バックアップが有効になっている場合に、自動バックアップが作成される毎日の時間範囲
-      # PreferredBackupWindow: "18:00-18:30"
+      PreferredBackupWindow: "18:00-18:30"
       # 週 1 回のシステムメンテナンスを実行できる時間帯、世界標準時 (UTC)。
-      # PreferredMaintenanceWindow: "sat:19:00-sat:19:30"
+      PreferredMaintenanceWindow: "sat:19:00-sat:19:30"
       AvailabilityZone: "ap-northeast-1a"
+      # マイナーバージョン自動アップグレードの有効化
       AutoMinorVersionUpgrade: false
       VPCSecurityGroups:
         - !Ref RDSSecurityGroup
       # タグを DB インスタンスから DB インスタンスのスナップショットにコピーするかどうか
       CopyTagsToSnapshot: false
       # 自動バックアップを保管する日数 0だと自動バックアップ無効
-      BackupRetentionPeriod: 0
+      BackupRetentionPeriod: 7
       Tags: 
         - Key: "Name"
           Value: !Sub "${PJPrefix}-db"
@@ -285,7 +293,7 @@ Resources:
       FromPort: 3306
       ToPort: 3306
       # 許可するセキュリティグループ
-      SourceSecurityGroupId: !GetAtt [ WebServerSG, GroupId ]
+      SourceSecurityGroupId: !GetAtt [ WebServerSecurityGroup, GroupId ]
       # 紐付けるセキュリティグループ
       GroupId: !GetAtt [ RDSSecurityGroup, GroupId ]
 
@@ -355,11 +363,12 @@ Outputs:
     Export:
       Name: !Sub "${PJPrefix}-public-route"
 
-# # EC2
+# EC2
   WebServer:
     Value: !Ref WebServer
     Export:
       Name: !Sub "${PJPrefix}-web-server"
+# RDS
   DBInstance:
     Value: !Ref DBInstance
     Export:
